@@ -1,6 +1,4 @@
 import axios from "axios"
-import { isObject } from "framer-motion"
-
 import { useState, useEffect } from "react"
 
 interface UserData {
