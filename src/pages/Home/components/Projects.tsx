@@ -87,7 +87,7 @@ const projects = [
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-800 mb-4">المشاريع الثابتة</h2>
-            <div className="w-24 h-1 bg-emerald-500 mx-auto rounded-full"></div>
+            <div className="w-24 h-1 bg-[#4a548dfc] mx-auto rounded-full"></div>
           </div>
           
           {/* Grid responsive: 1 column on mobile, 2 on tablet, 3 on desktop */}
@@ -118,7 +118,7 @@ const projects = [
                 </div>
                 
                 {/* Bottom section with content - matching the mint green color from image */}
-                <div className="bg-gradient-to-b from-green-50 to-green-100 p-6">
+                <div className="bg-gradient-to-b from-[#d1d5ecfc] to-[#e8eaf0fc] p-6">
                   {/* Title */}
                   <h3 className="text-xl font-bold text-gray-800 text-center mb-4">
                     {project.title}

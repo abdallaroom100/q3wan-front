@@ -1,6 +1,7 @@
 .elementor-element {
     width: 100%;
     position: relative;
+    padding: 0 !important;
 }
 
 .elementor-element-2b5cd58 {

@@ -4,11 +4,11 @@ const ProjectCard = () => {
   return (
     <div>
         <div className="elementor-element elementor-element-2b5cd58 e-con-full e-flex e-con e-child" data-id="2b5cd58" data-element_type="container">
-                <div className="elementor-element elementor-element-3a867cb e-grid e-con-full e-con e-child" data-id="3a867cb" data-element_type="container">
+                <div className="elementor-element elementor-element-3a867cb e-grid e-con-full e-con e-child justify-items-center" data-id="3a867cb" data-element_type="container">
                     <div className="elementor-element elementor-element-ea56f5f e-con-full e-flex e-con e-child" data-id="ea56f5f" data-element_type="container" data-settings="{&quot;background_background&quot;:&quot;gradient&quot;}">
                         <div className="elementor-element elementor-element-e260466 elementor-widget__width-initial elementor-widget elementor-widget-image" data-id="e260466" data-element_type="widget" data-widget_type="image.default">
                             <div className="elementor-widget-container">
-                                <img loading="lazy" decoding="async" width="399" height="399" src="https://ehsaan.sa/wp-content/uploads/2024/09/تعليم.png" className="attachment-large size-large wp-image-115" alt="" srcSet="https://ehsaan.sa/wp-content/uploads/2024/09/تعليم.png 399w, https://ehsaan.sa/wp-content/uploads/2024/09/تعليم-300x300.png 300w, https://ehsaan.sa/wp-content/uploads/2024/09/تعليم-150x150.png 150w, https://ehsaan.sa/wp-content/uploads/2024/09/تعليم-80x80.png 80w" sizes="(max-width: 399px) 100vw, 399px" />
+                                <img loading="lazy" decoding="async" width="399" height="399"  className="attachment-large size-large wp-image-115" alt=""src="img/SLID Q.jpg" style={{ height: "340px", width: "100%" }}   srcSet="img/SLID Q.jpg" sizes="(max-width: 399px) 100vw, 399px" />
                             </div>
                         </div>
                         <div className="elementor-element elementor-element-a1c3ff8 e-con-full e-flex e-con e-child" data-id="a1c3ff8" data-element_type="container">
@@ -54,10 +54,10 @@ const ProjectCard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="elementor-element elementor-element-00c1567 e-con-full e-flex e-con e-child" data-id="00c1567" data-element_type="container" data-settings="{&quot;background_background&quot;:&quot;gradient&quot;}">
+                    <div className="elementor-element elementor-element-00c1567 e-con-full e-flex e-con e-child  !p-0" data-id="00c1567" data-element_type="container" data-settings="{&quot;background_background&quot;:&quot;gradient&quot;}">
                         <div className="elementor-element elementor-element-4750824 elementor-widget__width-initial elementor-widget elementor-widget-image" data-id="4750824" data-element_type="widget" data-widget_type="image.default">
                             <div className="elementor-widget-container">
-                                <img loading="lazy" decoding="async" width="398" height="399" src="https://ehsaan.sa/wp-content/uploads/2024/09/يتيم.png" className="attachment-large size-large wp-image-116" alt="" srcSet="https://ehsaan.sa/wp-content/uploads/2024/09/يتيم.png 398w, https://ehsaan.sa/wp-content/uploads/2024/09/يتيم-300x300.png 300w, https://ehsaan.sa/wp-content/uploads/2024/09/يتيم-150x150.png 150w, https://ehsaan.sa/wp-content/uploads/2024/09/يتيم-80x80.png 80w" sizes="(max-width: 398px) 100vw, 398px" />
+                                <img loading="lazy" decoding="async" width="398" height="399" style={{ height: "340px", width: "100%" }} src="img/كارد 1.png" sizes="(max-width: 398px) 100vw, 398px" />
                             </div>
                         </div>
                         <div className="elementor-element elementor-element-24270ac e-con-full e-flex e-con e-child" data-id="24270ac" data-element_type="container">
@@ -106,7 +106,7 @@ const ProjectCard = () => {
                     <div className="elementor-element elementor-element-b951125 e-con-full e-flex e-con e-child" data-id="b951125" data-element_type="container" data-settings="{&quot;background_background&quot;:&quot;gradient&quot;}">
                         <div className="elementor-element elementor-element-91afd38 elementor-widget__width-initial elementor-widget elementor-widget-image" data-id="91afd38" data-element_type="widget" data-widget_type="image.default">
                             <div className="elementor-widget-container">
-                                <img loading="lazy" decoding="async" width="398" height="395" src="https://ehsaan.sa/wp-content/uploads/2024/09/أرملة.png" className="attachment-large size-large wp-image-117" alt="" srcSet="https://ehsaan.sa/wp-content/uploads/2024/09/أرملة.png 398w, https://ehsaan.sa/wp-content/uploads/2024/09/أرملة-300x298.png 300w, https://ehsaan.sa/wp-content/uploads/2024/09/أرملة-150x150.png 150w, https://ehsaan.sa/wp-content/uploads/2024/09/أرملة-80x80.png 80w" sizes="(max-width: 398px) 100vw, 398px" />
+                                <img loading="lazy" decoding="async" width="398" height="395" style={{ height: "340px", width: "100%" }} src='img/SLID 2.jpg' srcSet="img/SLID 2.jpg" className="attachment-large size-large wp-image-117" alt=""  sizes="(max-width: 398px) 100vw, 398px" />
                             </div>
                         </div>
                         <div className="elementor-element elementor-element-775330b e-con-full e-flex e-con e-child" data-id="775330b" data-element_type="container">

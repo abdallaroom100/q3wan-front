@@ -5,6 +5,7 @@ import { logOut } from "../store/slices/user";
 import hotToast from "../common/hotToast";
 
 const Header = () => {
+  
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dispatch = useDispatch();
   const toggleMenu = () => {
@@ -14,9 +15,11 @@ const Header = () => {
   const history = useNavigate();
   return (
     <header>
-      <a href="#" className="logo">
-        <img src="img/logo.png" alt="شعار الجمعية" />
-      </a>
+       <button className="logo cursor-pointer" onClick={() => history('/')}>
+
+        <img src="img/logo.png" className="logo" alt="شعار الجمعية" />
+       </button>
+     
       <div className="menu-toggle" id="menu-toggle" onClick={toggleMenu}>
         <i className={isMenuOpen ? "ri-close-line" : "ri-menu-line"}></i>
       </div>
@@ -41,7 +44,13 @@ const Header = () => {
           </li>
         </ul>
       </nav>
-      {user ? (
+      <div className="flex items-center gap-4">
+      {user  && 
+        <Link to={"/sign-family"} className="sin ">
+          تسجيل مستفيد
+        </Link>
+       }
+        {user ? (
         <button
           className="sin desktop-only"
           onClick={() => {
@@ -54,10 +63,13 @@ const Header = () => {
           تسجيل الخروج
         </button>
       ) : (
-        <Link to={"/login"} className="sin desktop-only">
+        <Link to={"/login"} className="sin ">
           تسجيل الدخول
         </Link>
       )}
+       
+      </div>
+      
     </header>
   );
 };

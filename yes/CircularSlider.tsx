@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, memo } from "react";
 import {
   Renderer,
   Camera,
@@ -690,29 +690,51 @@ interface CircularGalleryProps {
   font?: string;
 }
 
-export default function CircularGallery({
-  items,
+const CircularGallery = memo(function CircularGallery({
+  items = [
+    {
+      image: "https://images.unsplash.com/photo-1682687220063-4742bd7fd538",
+      text: "Image 1",
+    },
+    {
+      image: "https://images.unsplash.com/photo-1682687220063-4742bd7fd538",
+      text: "Image 2",
+    },
+    {
+      image: "https://images.unsplash.com/photo-1682687220063-4742bd7fd538",
+      text: "Image 3",
+    },
+  ],
   bend = 3,
   textColor = "#ffffff",
   borderRadius = 0.05,
   font = "bold 30px Figtree",
 }: CircularGalleryProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const appRef = useRef<App | null>(null);
+
   useEffect(() => {
     if (!containerRef.current) return;
-    const app = new App(containerRef.current, {
+
+    // Initialize the app
+    appRef.current = new App(containerRef.current, {
       items,
       bend,
       textColor,
       borderRadius,
       font,
     });
+
+    // Cleanup
     return () => {
-      app.destroy();
+      if (appRef.current) {
+        appRef.current.destroy();
+        appRef.current = null;
+      }
     };
   }, [items, bend, textColor, borderRadius, font]);
-  return <div
-    className="w-full h-full overflow-hidden cursor-grab active:cursor-grabbing"
-    ref={containerRef}
-  />;
-}
+
+  return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;
+});
+
+export default CircularGallery;

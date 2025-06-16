@@ -55,7 +55,8 @@ const SignFamily = ({
   const [step, setStep] = useState(1);
   const [animDir, setAnimDir] = useState<"left" | "right">("right");
   const [isMobile, setIsMobile] = useState(false);
-
+ 
+  console.log(userData)
   const [formData, setFormData] = useState<UserData>({
     firstName: userData?.firstName || "",
     secondName: userData?.secondName || "",
@@ -169,10 +170,10 @@ const SignFamily = ({
     try {
       const result = await updateUserData(formDataToSend);
       if (result.success) {
-        hotToast({ type: "success", message: result.message });
+        hotToast({ type: "success", message: result.message as string });
         // يمكنك إضافة إعادة التوجيه هنا إذا كنت تريد
       } else {
-        hotToast({ type: "error", message: result.error });
+        hotToast({ type: "error", message: result.error as string });
       }
     } catch (error) {
       hotToast({ type: "error", message: "حدث خطأ أثناء تحديث البيانات" });
@@ -737,7 +738,7 @@ const SignFamily = ({
   };
 
   return (
-    <div className="lg:!mt-10  container mx-auto  lg:px-5" style={{ display: 'flex', direction: 'rtl', flexDirection: isMobile ? 'column' : 'row', alignItems: 'stretch', width: '100%', gap: '3rem' }}>
+    <div className="lg:!mt-10  container mx-auto  lg:px-5" style={{ display: 'flex', direction: 'rtl', flexDirection: isMobile ? 'column' : 'row', alignItems: 'stretch', width: '100%' }}>
       {/* Progress Stepper */}
       <div className="flex flex-col items-center justify-start h-fit sticky top-[120px]" style={{ 
         width: isMobile ? '100%' : '350px', 

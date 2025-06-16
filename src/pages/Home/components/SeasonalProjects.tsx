@@ -1,3 +1,5 @@
+import ProjectCard from "../../../components/cards";
+
 const seasonalProjects = [
   {
     img: "img/SLID 2.jpg",
@@ -17,9 +19,9 @@ const seasonalProjects = [
 ];
 
 const SeasonalProjectsSection = () => (
-  <section className="projects-section">
-    <h2 className="my-section-title">المشاريع الموسمية</h2>
-    <div className="projects-grid">
+  <section className="projects-section ">
+    <h2 className="my-section-title !mb-12">المشاريع الموسمية</h2>
+    {/* <div className="projects-grid">
       {seasonalProjects.map(({ img, title, desc }, i) => (
         <div className="project-card" key={i}>
           <img src={img} alt="صورة المشروع" />
@@ -30,10 +32,10 @@ const SeasonalProjectsSection = () => (
           </div>
         </div>
       ))}
-    </div>
-
+    </div> */}
+ <ProjectCard />
     <div className="show-more-container">
-      <button id="show-more-btn">عرض جميع المشاريع</button>
+      {/* <button id="show-more-btn">عرض جميع المشاريع</button> */}
     </div>
   </section>
 );
