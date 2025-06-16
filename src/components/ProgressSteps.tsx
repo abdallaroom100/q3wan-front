@@ -31,7 +31,7 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({ step, steps, isMobile, st
                   {step > idx + 1 ? (
                     <span>&#10003;</span>
                   ) : (
-                    React.cloneElement(stepIcons[idx], { style: { transform: 'scale(1.3)' } })
+                    <span style={{ transform: 'scale(1.3)', display: 'inline-flex' }}>{stepIcons[idx]}</span>
                   )}
                 </div>
                 <span className={styles.stepLabel} style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>{label}</span>
@@ -67,7 +67,7 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({ step, steps, isMobile, st
               {step > idx + 1 ? (
                 <span>&#10003;</span>
               ) : (
-                stepIcons[idx]
+                <span style={{ transform: 'scale(1.3)', display: 'inline-flex' }}>{stepIcons[idx]}</span>
               )}
             </div>
             <span className={styles.stepLabel} style={{ fontSize: '1.1rem', marginTop: '0.5rem' }}>{label}</span>

@@ -9,13 +9,12 @@ export default defineConfig({
   ],
   build: {
     target: 'esnext',
-    minify: 'terser',
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['@fortawesome/react-fontawesome', 'react-icons', 'remixicon'],
-          'gallery': ['../../../yes/CircularSlider']
+          'ui-vendor': ['@fortawesome/react-fontawesome', 'react-icons']
         }
       }
     }
