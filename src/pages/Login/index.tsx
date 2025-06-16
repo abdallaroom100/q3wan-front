@@ -50,10 +50,10 @@ export default function ArabicAuthForm() {
 
     if (userData) {
       hotToast({ type: "success", message: "تم تسجيل الدخول بنجاح!" });
+      // dispatch(setUser(userData))
+      localStorage.setItem("user", JSON.stringify(userData))
       setTimeout(() => {
-        dispatch(setUser(userData))
-        localStorage.setItem("user",JSON.stringify(userData))
-        history("/");
+        window.location.reload();
       }, 800);
     }
     return;

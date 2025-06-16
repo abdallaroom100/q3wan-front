@@ -108,6 +108,13 @@ nav ul li a:hover,
   white-space: nowrap;
 }
 
+@media (max-width: 768px) {
+  .sin {
+    padding: 9px 10px;
+    font-size: 12px;
+  }
+}
+
 .sin:hover {
   background-color: rgb(149, 122, 77);
   color: #fff;
@@ -158,6 +165,8 @@ nav ul li a:hover,
 
   header {
     padding: 10px 20px;
+    gap: 1rem;
+    flex-wrap: nowrap;
   }
 }
 /* Responsive */

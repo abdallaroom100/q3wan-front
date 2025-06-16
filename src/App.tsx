@@ -51,7 +51,7 @@ function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={userData ? <Navigate to="/" /> : <Login />} />
             <Route path='/sign-family' element={userData ? <SignFamily userData={userData} /> : <Navigate to="/login" />} />
           </Routes>
         </Layout>

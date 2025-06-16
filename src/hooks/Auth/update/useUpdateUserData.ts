@@ -17,7 +17,7 @@ const useUpdateUserData = () => {
     }
 
     try {
-      await axios.patch("http://localhost:5000/user/update", formData, {
+      await axios.patch("https://children-pied.vercel.app/user/update", formData, {
         headers: {
           "Authorization": `Bearer ${currentUserToken}`,
           "Content-Type": "multipart/form-data"

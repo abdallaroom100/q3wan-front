@@ -13,8 +13,15 @@ const Header = () => {
   };
   const user = useSelector((state: any) => state.user.user);
   const history = useNavigate();
+
+  const handleLogout = () => {
+    // dispatch(logOut());
+    localStorage.removeItem("user");
+    window.location.reload();
+  };
+
   return (
-    <header>
+    <header className="flex justify-between items-center gap-6 !justify-center !px-3 ">
        <button className="logo cursor-pointer" onClick={() => history('/')}>
 
         <img src="img/logo.png" className="logo" alt="شعار الجمعية" />
@@ -52,13 +59,8 @@ const Header = () => {
        }
         {user ? (
         <button
-          className="sin desktop-only"
-          onClick={() => {
-            localStorage.removeItem("user");
-            dispatch(logOut());
-            history("/login");
-            hotToast({ type: "success", message: "تم تسجيل الخروج بنجاح" });
-          }}
+          className="sin "
+          onClick={handleLogout}
         >
           تسجيل الخروج
         </button>
