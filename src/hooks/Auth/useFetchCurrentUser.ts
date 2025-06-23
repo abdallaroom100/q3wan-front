@@ -62,7 +62,7 @@ const useFetchCurrentUser = () => {
     setIsLoading(true)
     setError(undefined)
     try {
-      const response = axios.get("https://children-pied.vercel.app/user/me",{
+      const response = axios.get("https://children-paid.vercel.app/user/me",{
         headers:{
           "Authorization":`Bearer ${currentUserToken}`
         }
