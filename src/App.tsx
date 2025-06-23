@@ -23,7 +23,7 @@ import StrategicPartners from "./pages/Home/components/StrategicPartners";
 import CircularGallery from "../yes/CircularSlider";
 import Footer from "./components/Footer";
 
-axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = true;   
 config.autoAddCss = false;
 
 function App() {
