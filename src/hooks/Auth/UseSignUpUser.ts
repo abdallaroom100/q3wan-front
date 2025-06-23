@@ -16,7 +16,7 @@ const useSignUpUser = () => {
     setUserData(null);
 
     try {
-      const res = await axios.post("https://children-paid.vercel.app/user/signup", signupData);
+      const res = await axios.post("https://children-khaki.vercel.app/user/signup", signupData);
       setUserData(res.data); // ✅ تحديث state
       return { success: true, userData: res.data };
     } catch (err: any) {
