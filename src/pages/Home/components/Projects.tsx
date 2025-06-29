@@ -1,4 +1,44 @@
 const projects = [
+  {
+    img: "img/كفالة يتيم.jpg",
+    title: "كفالة يتيم",
+    cost: "معدل 2500 ريال سنوياً",
+    beneficiaries: "فئة الأيتام حسب المعايير",
+    card: "تحويل بنكي",
+    period: "فترة الصرف ربع سنوي",
+    bgColor: "bg-amber-600",
+    bgGradient: "from-amber-600 to-orange-500"
+  },
+  {
+    img: "img/مشروع السله الغذائية.jpg",
+    title: "السلة الغذائية",
+    cost: "معدل 3600 ريال سنوياً",
+    beneficiaries: "جميع الفئات حسب المعايير",
+    card: "بطاقة تسوق",
+    period: "فترة الصرف شهرياً",
+    bgColor: "bg-emerald-600",
+    bgGradient: "from-emerald-600 to-emerald-500"
+  },
+  {
+    img: "img/test.gif",
+    title: "السلة الغذائية",
+    cost: "معدل 3600 ريال سنوياً",
+    beneficiaries: "جميع الفئات حسب المعايير",
+    card: "بطاقة تسوق",
+    period: "فترة الصرف شهرياً",
+    bgColor: "bg-emerald-600",
+    bgGradient: "from-emerald-600 to-emerald-500"
+  },
+  {
+    img: "img/مشروع سقيا الماء.jpg",
+    title: "مشروع سقيا المياه",
+    cost: "معدل 1000 ريال",
+    beneficiaries: "المناطق المحتاجة",
+    card: "تنفيذ مباشر",
+    period: "حسب الحاجة",
+    bgColor: "bg-cyan-600",
+    bgGradient: "from-cyan-600 to-blue-500"
+  },
     {
       img: "img/SLID 2.jpg",
       title: "كسوة العيد",
@@ -18,36 +58,6 @@ const projects = [
       period: "مرة واحدة سنوياً",
       bgColor: "bg-purple-600",
       bgGradient: "from-purple-600 to-purple-500"
-    },
-    {
-      img: "img/كفالة يتيم.jpg",
-      title: "كفالة يتيم",
-      cost: "معدل 2500 ريال سنوياً",
-      beneficiaries: "فئة الأيتام حسب المعايير",
-      card: "تحويل بنكي",
-      period: "فترة الصرف ربع سنوي",
-      bgColor: "bg-amber-600",
-      bgGradient: "from-amber-600 to-orange-500"
-    },
-    {
-      img: "img/مشروع السله الغذائية.jpg",
-      title: "كفالة إطعام",
-      cost: "معدل 3600 ريال سنوياً",
-      beneficiaries: "جميع الفئات حسب المعايير",
-      card: "بطاقة تسوق",
-      period: "فترة الصرف شهرياً",
-      bgColor: "bg-emerald-600",
-      bgGradient: "from-emerald-600 to-emerald-500"
-    },
-    {
-      img: "img/مشروع سقيا الماء.jpg",
-      title: "مشروع سقيا المياه",
-      cost: "معدل 1000 ريال",
-      beneficiaries: "المناطق المحتاجة",
-      card: "تنفيذ مباشر",
-      period: "حسب الحاجة",
-      bgColor: "bg-cyan-600",
-      bgGradient: "from-cyan-600 to-blue-500"
     },
     {
       img: "img/مشروع الحقيبة المدرسية.jpg",
@@ -86,7 +96,7 @@ const projects = [
       <div className="min-h-screen bg-gray-100 py-12 px-4" dir="rtl">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">المشاريع الثابتة</h2>
+            <h2 className="text-4xl font-bold text-gray-800 mb-4">مشاريعنا</h2>
             <div className="w-24 h-1 bg-[#4a548dfc] mx-auto rounded-full"></div>
           </div>
           
@@ -99,16 +109,16 @@ const projects = [
                   <img 
                     src={project.img} 
                     alt={project.title}
-                    className="w-full h-full object-cover opacity-80"
+                    className="w-full h-full  "
                   />
                   
                   {/* Logo in top right corner */}
                   <div className="absolute top-4 right-4 text-white text-center">
-                    <div className=" bg-[#4a8d56fc] rounded-lg p-2 mb-2">
+                    {/* <div className=" bg-[#4a8d56fc] rounded-lg p-2 mb-2">
                       <svg className="w-6 h-6 mx-auto text-white" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2l3.09 6.26L22 9l-5 4.87 1.18 6.88L12 17.77l-6.18 2.98L7 14.87 2 9l6.91-0.74L12 2z"/>
                       </svg>
-                    </div>
+                    </div> */}
                     {/* <div className="text-xs leading-tight font-medium">
                       <div>ميــــــــــرة</div>
                       <div>الخيرية</div>
@@ -118,9 +128,9 @@ const projects = [
                 </div>
                 
                 {/* Bottom section with content - matching the mint green color from image */}
-                <div className="bg-gradient-to-b from-[#d1d5ecfc] to-[#e8eaf0fc] p-6">
+                <div className=" p-6">
                   {/* Title */}
-                  <h3 className="text-xl font-bold text-gray-800 text-center mb-4">
+                  <h3 className=" text-xl lg:text-2xl font-bold text-gray-800 text-center mb-4 ">
                     {project.title}
                   </h3>
                   
@@ -139,7 +149,7 @@ const projects = [
                           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                         </svg>
                       </div>
-                      <span className="text-gray-700 font-medium">{project.cost}</span>
+                      <span className=" text-[16px] text-[#31236f] font-bold">{project.cost}</span>
                     </div>
                     
                     <div className="flex items-center text-sm">
@@ -148,7 +158,7 @@ const projects = [
                           <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zM4 18v-6h2.5l6 6H4zm16-10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zM12.5 11H11v5.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V13h2.5c.83 0 1.5-.67 1.5-1.5S17.33 10 16.5 10h-4z"/>
                         </svg>
                       </div>
-                      <span className="text-gray-700 font-medium">{project.beneficiaries}</span>
+                      <span className=" text-[16px] text-[#31236f] font-bold">{project.beneficiaries}</span>
                     </div>
                     
                     <div className="flex items-center text-sm">
@@ -157,7 +167,7 @@ const projects = [
                           <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
                         </svg>
                       </div>
-                      <span className="text-gray-700 font-medium">{project.card}</span>
+                      <span className=" text-[16px] text-[#31236f] font-bold">{project.card}</span>
                     </div>
                     
                     <div className="flex items-center text-sm">
@@ -166,7 +176,7 @@ const projects = [
                           <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
                         </svg>
                       </div>
-                      <span className="text-gray-700 font-medium">{project.period}</span>
+                      <span className=" text-[16px] text-[#31236f] font-bold">{project.period}</span>
                     </div>
                   </div>
                 </div>

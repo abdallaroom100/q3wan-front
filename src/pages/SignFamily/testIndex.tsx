@@ -13,7 +13,7 @@ const hijriMonths: string[] = [
 ];
 const hijriDays: number[] = Array.from({length: 30}, (_, i) => i + 1);
 
-const steps = ["البيانات الشخصية", "بيانات عامة", "بيانات المرافقين"];
+const steps = ["البيانات الشخصية", "بيانات عامة", " بيانات المرافقين"];
 
 type Housemate = {
   name: string;
@@ -67,15 +67,16 @@ interface UserData {
   housemate?: Housemate[];
 }
 
-// تعريف نوع مصدر الدخل (من الكود القديم)
+// تعريف نوع مصدر الدخل
 interface IncomeSource {
   sourceType: string;
   sourceAmount: string;
   sourceImage: File | null;
 }
 
-// دالة تقريبية لتحويل السنة الميلادية إلى هجرية
+// دالة تقريبية لتحويل السنة الميلادية إلى هجرية والعكس
 function getCurrentHijriYear() {
+  // معادلة تقريبية: الهجري = الميلادي - 622 + (الميلادي-622)/33
   const now = new Date();
   const gYear = now.getFullYear();
   return Math.floor((gYear - 622) + ((gYear - 622) / 33));
@@ -91,7 +92,7 @@ const STEP_KEY = 'signFamilyStep';
 const DATETYPE_KEY = 'signFamilyDateType';
 const BIRTHDATE_KEY = 'signFamilyBirthDate';
 
-// LocalStorage Keys للبيانات المؤقتة
+// LocalStorage Keys للبيانات المؤقتة (التعديلات الحالية) - لها الأولوية
 const TEMP_COMPANIONS_KEY = 'signFamilyTempCompanions';
 const TEMP_COMPANIONS_COUNT_KEY = 'signFamilyTempCompanionsCount';
 const TEMP_MALE_COUNT_KEY = 'signFamilyTempMaleCount';
@@ -118,12 +119,14 @@ const fieldLabels: {[key: string]: string} = {
   bankName: "البنك"
 };
 
-function validateForm(formData: UserData, companions: any[], dateType: string) {
+function validateForm(formData: UserData, companions: any[], incomeSources: IncomeSource[], dateType: string) {
   // الحقول الأساسية
   for (const key of Object.keys(fieldLabels)) {
     const value = String(formData[key as keyof UserData] ?? '');
     if (!String(value) || String(value) === "") {
+      // شرط خاص للإعاقة فقط إذا الحالة الصحية غير سليم
       if (key === 'disabilityType' && formData.healthStatus !== 'غير سليم') continue;
+      // شرط خاص للإيجار فقط إذا نوع السكن إيجار
       if (key === 'rentAmount' && formData.housingType !== 'إيجار') continue;
       return { valid: false, message: `يرجى ملء حقل ${fieldLabels[key]}` };
     }
@@ -143,6 +146,13 @@ function validateForm(formData: UserData, companions: any[], dateType: string) {
     if (c.healthStatus === "غير سليم" && !c.disabilityType) return { valid: false, message: `يرجى اختيار نوع الإعاقة في بيانات المرافق رقم ${i+1}` };
   }
 
+  // مصادر الدخل
+  for (let i = 0; i < incomeSources.length; i++) {
+    const src = incomeSources[i];
+    if (!src.sourceAmount) return { valid: false, message: `يرجى ملء مبلغ الدخل لمصدر الدخل (${src.sourceType})` };
+    if (!src.sourceImage) return { valid: false, message: `يرجى إرفاق صورة الدخل لمصدر الدخل (${src.sourceType})` };
+  }
+
   return { valid: true };
 }
 
@@ -151,7 +161,7 @@ const SignFamily = ({
 }: {
   userData: UserData | undefined;
 }) => {
-  const { updateUserData } = useUpdateUserData();
+  const {updateUserData} = useUpdateUserData()
   const [step, setStep] = useState(() => {
     const saved = localStorage.getItem(STEP_KEY);
     return saved ? Number(saved) : 1;
@@ -169,12 +179,28 @@ const SignFamily = ({
   const [maleCount, setMaleCount] = useState<number>(0);
   const [companions, setCompanions] = useState<any[]>([]);
   const [incomeSources, setIncomeSources] = useState<IncomeSource[]>(() => {
+    // جلب من user في localStorage أولاً
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const userObj = JSON.parse(userStr);
+        // استخدم فقط incomeSources (الجمع)
+        if (userObj?.incomeSources && Array.isArray(userObj.incomeSources)) {
+          return userObj.incomeSources;
+        }
+      } catch {}
+    }
+    // ثم من signFamilyIncomeSources
     const saved = localStorage.getItem('signFamilyIncomeSources');
     if (saved) return JSON.parse(saved);
+    // ثم من userData
+    if (userData?.incomeSources && Array.isArray(userData.incomeSources)) {
+      return userData.incomeSources;
+    }
     return [];
   });
   const [incomeFiles, setIncomeFiles] = useState<{ [key: string]: File | null }>({});
-
+ 
   const [formData, setFormData] = useState<UserData>(() => {
     const saved = localStorage.getItem(FORM_KEY);
     if (saved) return { ...JSON.parse(saved) };
@@ -229,29 +255,29 @@ const SignFamily = ({
       ibanImage: null,
     };
   });
-
+  
+  console.log(userData)
   const formContainerRef = useRef<HTMLDivElement>(null);
   const [fixedHeight, setFixedHeight] = useState<number | undefined>(undefined);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [imagePreviewLabel, setImagePreviewLabel] = useState<string>("");
 
   const stepIcons = [<FaUser />, <FaHome />, <FaUsers />];
 
   // --- Load from localStorage on mount ---
   useEffect(() => {
+    // step
     const savedStep = localStorage.getItem(STEP_KEY);
     if (savedStep) setStep(Number(savedStep));
-
+    // dateType
     const savedDateType = localStorage.getItem(DATETYPE_KEY);
     if (savedDateType === 'هجري' || savedDateType === 'ميلادي') setDateType(savedDateType);
-
+    // formData
     const savedForm = localStorage.getItem(FORM_KEY);
     if (savedForm) {
       try {
         setFormData(prev => ({ ...prev, ...JSON.parse(savedForm) }));
       } catch {}
     }
-
+    // companions - اقرأ من localStorage المؤقت أولاً، ثم من localStorage العادي، ثم من user
     const tempCompanions = localStorage.getItem(TEMP_COMPANIONS_KEY);
     const savedCompanions = localStorage.getItem(COMPANIONS_KEY);
     if (tempCompanions) {
@@ -269,6 +295,7 @@ const SignFamily = ({
           setCompanions(parsedCompanions);
           setCompanionsCount(parsedCompanions.length);
         } else {
+          // إذا companions فاضي، اقرأ من user
           const userStr = localStorage.getItem('user');
           if (userStr) {
             try {
@@ -282,6 +309,7 @@ const SignFamily = ({
         }
       } catch {}
     } else {
+      // إذا لا يوجد companions محفوظ، اقرأ من user
       const userStr = localStorage.getItem('user');
       if (userStr) {
         try {
@@ -293,7 +321,7 @@ const SignFamily = ({
         } catch {}
       }
     }
-
+    // companionsCount - اقرأ من localStorage المؤقت أولاً
     const tempCount = localStorage.getItem(TEMP_COMPANIONS_COUNT_KEY);
     const savedCount = localStorage.getItem(COMPANIONS_COUNT_KEY);
     if (tempCount && Number(tempCount) > 0) {
@@ -301,10 +329,12 @@ const SignFamily = ({
     } else if (savedCount && Number(savedCount) > 0) {
       setCompanionsCount(Number(savedCount));
     } else {
+      // إذا لا يوجد companionsCount محفوظ أو يساوي 0، اقرأ من user
       const userStr = localStorage.getItem('user');
       if (userStr) {
         try {
           const userObj = JSON.parse(userStr);
+          // استخدم numberOfFacilities إذا كان موجود وأكبر من 0، وإلا استخدم طول facilitiesInfo
           if (typeof userObj.numberOfFacilities === 'number' && userObj.numberOfFacilities > 0) {
             setCompanionsCount(userObj.numberOfFacilities);
           } else if (Array.isArray(userObj.facilitiesInfo) && userObj.facilitiesInfo.length > 0) {
@@ -313,7 +343,7 @@ const SignFamily = ({
         } catch {}
       }
     }
-
+    // maleCount - اقرأ من localStorage المؤقت أولاً
     const tempMale = localStorage.getItem(TEMP_MALE_COUNT_KEY);
     const savedMale = localStorage.getItem(MALE_COUNT_KEY);
     if (tempMale) {
@@ -321,6 +351,7 @@ const SignFamily = ({
     } else if (savedMale) {
       setMaleCount(Number(savedMale));
     } else {
+      // إذا لا يوجد maleCount محفوظ، اقرأ من user
       const userStr = localStorage.getItem('user');
       if (userStr) {
         try {
@@ -331,11 +362,14 @@ const SignFamily = ({
         } catch {}
       }
     }
-
-    const savedIncomeSources = localStorage.getItem('signFamilyIncomeSources');
-    if (savedIncomeSources) {
+    // incomeSources
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
       try {
-        setIncomeSources(JSON.parse(savedIncomeSources));
+        const userObj = JSON.parse(userStr);
+        if (userObj?.incomeSources && Array.isArray(userObj.incomeSources)) {
+          setIncomeSources(userObj.incomeSources);
+        }
       } catch {}
     }
   }, []);
@@ -345,10 +379,11 @@ const SignFamily = ({
     localStorage.setItem(FORM_KEY, JSON.stringify(formData));
     localStorage.setItem(BIRTHDATE_KEY, formData.birthDate || "");
   }, [formData]);
-
   useEffect(() => {
     localStorage.setItem(COMPANIONS_KEY, JSON.stringify(companions));
+    // حفظ في localStorage المؤقت (له الأولوية)
     localStorage.setItem(TEMP_COMPANIONS_KEY, JSON.stringify(companions));
+    // تحديث user.facilitiesInfo في localStorage فورًا
     const userStr = localStorage.getItem('user');
     if (userStr) {
       try {
@@ -358,10 +393,11 @@ const SignFamily = ({
       } catch {}
     }
   }, [companions]);
-
   useEffect(() => {
     localStorage.setItem(COMPANIONS_COUNT_KEY, companionsCount.toString());
+    // حفظ في localStorage المؤقت (له الأولوية)
     localStorage.setItem(TEMP_COMPANIONS_COUNT_KEY, companionsCount.toString());
+    // تحديث user.numberOfFacilities في localStorage فورًا
     const userStr = localStorage.getItem('user');
     if (userStr) {
       try {
@@ -371,10 +407,11 @@ const SignFamily = ({
       } catch {}
     }
   }, [companionsCount]);
-
   useEffect(() => {
     localStorage.setItem(MALE_COUNT_KEY, maleCount.toString());
+    // حفظ في localStorage المؤقت (له الأولوية)
     localStorage.setItem(TEMP_MALE_COUNT_KEY, maleCount.toString());
+    // تحديث user.numberOfMales في localStorage فورًا
     const userStr = localStorage.getItem('user');
     if (userStr) {
       try {
@@ -384,7 +421,6 @@ const SignFamily = ({
       } catch {}
     }
   }, [maleCount]);
-
   useEffect(() => {
     if (
       formData.familyCardFile &&
@@ -397,15 +433,12 @@ const SignFamily = ({
       localStorage.removeItem(FAMILY_CARD_KEY);
     }
   }, [formData.familyCardFile]);
-
   useEffect(() => {
     localStorage.setItem(STEP_KEY, step.toString());
   }, [step]);
-
   useEffect(() => {
     localStorage.setItem(DATETYPE_KEY, dateType);
   }, [dateType]);
-
   useEffect(() => {
     localStorage.setItem('signFamilyIncomeSources', JSON.stringify(incomeSources));
   }, [incomeSources]);
@@ -418,6 +451,7 @@ const SignFamily = ({
   }, []);
 
   useEffect(() => {
+    // حساب السن تلقائيًا عند تغيير التاريخ أو نوع التاريخ
     if (formData.birthDate) {
       let ageNum = 0;
       if (dateType === 'ميلادي') {
@@ -435,6 +469,7 @@ const SignFamily = ({
           setAge("");
         }
       } else {
+        // هجري: birthDate بصيغة yyyy-mm-dd
         const [hYear] = formData.birthDate.split('-').map(Number);
         if (hYear && !isNaN(hYear)) {
           ageNum = currentHijriYear - hYear;
@@ -465,6 +500,7 @@ const SignFamily = ({
               ageNum = age > 0 ? age.toString() : '';
             }
           } else {
+            // هجري
             const [hYear] = companion.birthDate.split('-').map(Number);
             if (hYear && !isNaN(hYear)) {
               const hijriYear = getCurrentHijriYear();
@@ -478,6 +514,7 @@ const SignFamily = ({
     );
   }, [companionsCount, companions, dateType]);
 
+  // إضافة كروت فارغة جديدة عند زيادة عدد المرافقين
   useEffect(() => {
     if (companionsCount > companions.length) {
       const newCompanions = [...companions];
@@ -502,13 +539,17 @@ const SignFamily = ({
   }, [companionsCount]);
 
   const handleSubmit = async () => {
-    const validation = validateForm(formData, companions, dateType);
+    // تحقق من صحة البيانات أولاً برسالة دقيقة
+    const validation = validateForm(formData, companions, incomeSources, dateType);
     if (!validation.valid) {
       hotToast({ type: "error", message: validation.message || "حدث خطأ غير متوقع" });
       return;
     }
 
+    // إنشاء FormData وإضافة البيانات
     const formDataToSend = new FormData();
+
+    // أضف بيانات المرافقين مباشرة في housemate (فقط الحقول المطلوبة)
     const housemateToSend = companions.map((h: any) => ({
       name: String(h.name ?? ''),
       identityNumber: String(h.identityNumber ?? h.id ?? ''),
@@ -520,21 +561,20 @@ const SignFamily = ({
       disabilityType: String(h.disabilityType ?? '')
     }));
     formDataToSend.append('housemate', JSON.stringify(housemateToSend));
+    // أضف عدد المرافقين وعدد الذكور مع الفورم بالأسماء المطلوبة
     formDataToSend.append('numberOfFacilities', companionsCount.toString());
     formDataToSend.append('numberOfMales', maleCount.toString());
 
     Object.entries(formData).forEach(([key, value]) => {
       if (key === 'home') {
+        // لا ترسل home نهائيًا
         return;
       } else if (key === 'idImagePath' && value instanceof File) {
         formDataToSend.append('idImagePath', value);
       } else if (key === 'familyCardFile' && value instanceof File) {
         formDataToSend.append('familyCardFile', value);
-      } else if (key === 'rentContractFile' && value instanceof File) {
-        formDataToSend.append('rentContractFile', value);
-      } else if (key === 'ibanImage' && value instanceof File) {
-        formDataToSend.append('ibanImage', value);
       } else if (key !== 'incomeSources') {
+        // فقط أضف إذا القيمة ليست undefined أو null أو File
         if (typeof value === 'string') {
           formDataToSend.append(key, value);
         } else if (typeof value === 'number') {
@@ -542,18 +582,29 @@ const SignFamily = ({
         }
       }
     });
+    // أضف birthDatetype مع البيانات
     formDataToSend.append('birthDatetype', dateType);
 
-    const incomeSourcesData = Object.entries(formData.incomeSources || {}).map(([sourceType, sourceAmount]) => ({
-      sourceType,
-      sourceAmount,
-      sourceImage: incomeFiles[sourceType]?.name || ""
-    }));
+    // تجهيز incomeSources كمصفوفة كاملة (بما في ذلك الصور)
+    const incomeSourcesData = incomeSources.map((src, idx) => {
+      let sourceImagePath = '';
+      if (src.sourceImage && src.sourceImage instanceof File) {
+        sourceImagePath = src.sourceImage.name;
+      } else if (typeof src.sourceImage === 'string') {
+        sourceImagePath = src.sourceImage;
+      }
+      return {
+        sourceType: src.sourceType,
+        sourceAmount: src.sourceAmount,
+        sourceImage: sourceImagePath
+      };
+    });
     formDataToSend.append('incomeSources', JSON.stringify(incomeSourcesData));
-    Object.entries(incomeFiles).forEach(([sourceType, file]) => {
-      if (file) {
-        formDataToSend.append(`incomeSources[${sourceType}][sourceImage]`, file);
-        formDataToSend.append(`incomeSources[${sourceType}][sourceType]`, sourceType);
+    // أضف كل صورة باسم incomeSources[<index>][sourceImage] مع sourceType
+    incomeSources.forEach((src, idx) => {
+      if (src.sourceImage && src.sourceType) {
+        formDataToSend.append(`incomeSources[${idx}][sourceImage]`, src.sourceImage);
+        formDataToSend.append(`incomeSources[${idx}][sourceType]`, src.sourceType);
       }
     });
 
@@ -561,6 +612,7 @@ const SignFamily = ({
       const result = await updateUserData(formDataToSend);
       if (result.success) {
         hotToast({ type: "success", message: result.message as string });
+        // حذف البيانات من localStorage عند النجاح
         localStorage.removeItem(FORM_KEY);
         localStorage.removeItem(COMPANIONS_KEY);
         localStorage.removeItem(COMPANIONS_COUNT_KEY);
@@ -569,9 +621,7 @@ const SignFamily = ({
         localStorage.removeItem(DATETYPE_KEY);
         localStorage.removeItem(BIRTHDATE_KEY);
         localStorage.removeItem('signFamilyIncomeSources');
-        localStorage.removeItem(TEMP_COMPANIONS_KEY);
-        localStorage.removeItem(TEMP_COMPANIONS_COUNT_KEY);
-        localStorage.removeItem(TEMP_MALE_COUNT_KEY);
+        // يمكنك إضافة إعادة التوجيه هنا إذا كنت تريد
       } else {
         hotToast({ type: "error", message: result.error as string });
       }
@@ -579,7 +629,7 @@ const SignFamily = ({
       hotToast({ type: "error", message: "حدث خطأ أثناء تحديث البيانات" });
     }
   };
-
+  // تحديث البيانات
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -606,7 +656,6 @@ const SignFamily = ({
       return next;
     });
   };
-
   const handleBack = () => {
     setAnimDir("left");
     setStep((s) => {
@@ -616,6 +665,7 @@ const SignFamily = ({
     });
   };
 
+  // محتوى كل خطوة
   const renderStep = () => {
     if (step === 1) {
       return (
@@ -730,9 +780,9 @@ const SignFamily = ({
                   display: 'inline-block',
                   fontWeight: 500,
                 }}>
-                  {formData.idImagePath ? 'تحديث' : 'رفع ملف'}
+                  {(formData.idImagePath || userIdImagePath) ? 'تحديث' : 'رفع ملف'}
                 </label>
-                {formData.idImagePath && (
+                {(formData.idImagePath || userIdImagePath) && (
                   <button
                     type="button"
                     style={{
@@ -743,17 +793,19 @@ const SignFamily = ({
                       border: 'none',
                       cursor: 'pointer',
                       marginRight: 4,
-                      background: '#3182ce',
+                      background: '#3182ce', // أزرق
                       color: '#fff',
                       fontWeight: 500,
                       textAlign: 'center',
                       display: 'inline-block',
                     }}
                     onClick={() => {
-                      if (typeof formData.idImagePath === 'string') {
+                      if (typeof formData.idImagePath === 'string' && formData.idImagePath) {
                         setImagePreview(formData.idImagePath);
                       } else if (formData.idImagePath instanceof File) {
                         setImagePreview(URL.createObjectURL(formData.idImagePath));
+                      } else if (userIdImagePath) {
+                        setImagePreview(userIdImagePath);
                       }
                       setImagePreviewLabel('صورة الهوية');
                     }}
@@ -900,7 +952,7 @@ const SignFamily = ({
       );
     }
     if (step === 2) {
-      const totalIncome = Object.values(formData.incomeSources || {}).reduce((acc: number, amount: string) => acc + (parseFloat(amount) || 0), 0);
+      const totalIncome = incomeSources.reduce((acc: number, src: IncomeSource) => acc + (parseFloat(src.sourceAmount) || 0), 0);
       return (
         <div className={styles.card}>
           <h2 className={styles.title}>بيانات عامة</h2>
@@ -910,6 +962,7 @@ const SignFamily = ({
             </div>
           )}
           <div className={styles.grid}>
+            {/* مدينة السكن */}
             <div className={styles.inputGroup}>
               <label>مدينة السكن</label>
               <input
@@ -919,6 +972,7 @@ const SignFamily = ({
                 placeholder="ما هي مدينة سكنك الحالية؟"
               />
             </div>
+            {/* الحي */}
             <div className={styles.inputGroup}>
               <label>الحي</label>
               <input
@@ -928,6 +982,7 @@ const SignFamily = ({
                 placeholder="اسم الحي"
               />
             </div>
+            {/* نوع السكن */}
             <div className={styles.inputGroup}>
               <label>نوع السكن</label>
               <select
@@ -941,6 +996,7 @@ const SignFamily = ({
                 <option value="إيجار">إيجار</option>
               </select>
             </div>
+            {/* مبلغ الإيجار ورفع العقد */}
             {formData.housingType === "إيجار" && (
               <>
                 <div className={styles.inputGroup}>
@@ -976,9 +1032,9 @@ const SignFamily = ({
                       display: 'inline-block',
                       fontWeight: 500,
                     }}>
-                      {formData.rentContractFile ? 'تحديث' : 'رفع ملف'}
+                      {(formData.rentContractFile || userRentImage) ? 'تحديث' : 'رفع ملف'}
                     </label>
-                    {formData.rentContractFile && (
+                    {(formData.rentContractFile || userRentImage) && (
                       <button
                         type="button"
                         style={{
@@ -989,17 +1045,19 @@ const SignFamily = ({
                           border: 'none',
                           cursor: 'pointer',
                           marginRight: 4,
-                          background: '#3182ce',
+                          background: '#3182ce', // أزرق
                           color: '#fff',
                           fontWeight: 500,
                           textAlign: 'center',
                           display: 'inline-block',
                         }}
                         onClick={() => {
-                          if (typeof formData.rentContractFile === 'string') {
+                          if (typeof formData.rentContractFile === 'string' && formData.rentContractFile) {
                             setImagePreview(formData.rentContractFile);
                           } else if (formData.rentContractFile instanceof File) {
                             setImagePreview(URL.createObjectURL(formData.rentContractFile));
+                          } else if (userRentImage) {
+                            setImagePreview(userRentImage);
                           }
                           setImagePreviewLabel('عقد الإيجار');
                         }}
@@ -1009,13 +1067,14 @@ const SignFamily = ({
                 </div>
               </>
             )}
+            {/* مصادر الدخل */}
             <div className={styles.inputGroup} style={{ gridColumn: 'span 3' }}>
               <label style={{ fontWeight: 'bold', fontSize: 17, color: '#2c5282', marginBottom: 10, display: 'block' }}>
                 اختر مصادر الدخل السنوية
               </label>
               <div className={styles.incomeSourcesRow} style={{ marginBottom: '20px' }}>
                 {incomeOptions.map((opt) => {
-                  const isActive = !!formData.incomeSources?.[opt.key];
+                  const isActive = !!incomeSources.find(src => src.sourceType === opt.key);
                   return (
                     <button
                       type="button"
@@ -1067,7 +1126,8 @@ const SignFamily = ({
                   );
                 })}
               </div>
-              {Object.keys(formData.incomeSources || {}).length > 0 && (
+              {/* خانات إدخال المبالغ والصور للمصادر المختارة فقط */}
+              {incomeSources.length > 0 && (
                 <div style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
@@ -1078,14 +1138,14 @@ const SignFamily = ({
                   borderRadius: '8px',
                   border: '1px solid #e5e7eb'
                 }}>
-                  {Object.entries(formData.incomeSources || {}).map(([sourceType, sourceAmount]) => (
-                    <div key={sourceType} style={{ display: 'flex', flexDirection: 'column', marginBottom: 12 }}>
+                  {incomeSources.map((src: IncomeSource) => (
+                    <div key={src.sourceType} style={{ display: 'flex', flexDirection: 'column', marginBottom: 12 }}>
                       <label style={{ fontSize: '14px', color: '#4a5a7a', marginBottom: '8px', fontWeight: '500', textAlign: 'right' }}>
                         نوع الدخل
                       </label>
                       <input
                         type="text"
-                        value={sourceType}
+                        value={src.sourceType}
                         disabled
                         style={{ background: '#f3f4f6', color: '#222', fontWeight: 600 }}
                       />
@@ -1097,11 +1157,8 @@ const SignFamily = ({
                         min="0"
                         step="0.01"
                         placeholder="أدخل المبلغ بالريال سنويًا"
-                        value={sourceAmount}
-                        onChange={e => setFormData(prev => ({
-                          ...prev,
-                          incomeSources: { ...prev.incomeSources, [sourceType]: e.target.value }
-                        }))}
+                        value={src.sourceAmount}
+                        onChange={e => updateIncomeSource(src.sourceType, 'sourceAmount', e.target.value)}
                       />
                       <label style={{ fontSize: 13, color: '#2c5282', fontWeight: 500, margin: '8px 0 4px' }}>
                         إرفاق مستند الدخل
@@ -1111,16 +1168,16 @@ const SignFamily = ({
                           type="file"
                           accept="image/*,application/pdf"
                           style={{ display: 'none' }}
-                          id={`incomeSourceFile_${sourceType}`}
+                          id={`incomeSourceFile_${src.sourceType}`}
                           onChange={e => {
                             const file = e.target.files && e.target.files[0] ? e.target.files[0] : null;
-                            setIncomeFiles(prev => ({ ...prev, [sourceType]: file }));
+                            updateIncomeSource(src.sourceType, 'sourceImage', file);
                           }}
                         />
-                        <label htmlFor={`incomeSourceFile_${sourceType}`} className={styles.fileInputLabel} style={{ cursor: 'pointer', background: '#e2e8f0', padding: '6px 16px', borderRadius: 6, marginTop: 4 }}>
-                          {incomeFiles[sourceType] ? 'تحديث' : 'رفع ملف'}
+                        <label htmlFor={`incomeSourceFile_${src.sourceType}`} className={styles.fileInputLabel} style={{ cursor: 'pointer', background: '#e2e8f0', padding: '6px 16px', borderRadius: 6, marginTop: 4 }}>
+                          {(src.sourceImage && (typeof src.sourceImage === 'string' || src.sourceImage instanceof File)) ? 'تحديث' : 'رفع ملف'}
                         </label>
-                        {incomeFiles[sourceType] && (
+                        {src.sourceImage && (
                           <button
                             type="button"
                             style={{
@@ -1138,23 +1195,34 @@ const SignFamily = ({
                               display: 'inline-block',
                             }}
                             onClick={() => {
-                              if (incomeFiles[sourceType]) {
-                                setImagePreview(URL.createObjectURL(incomeFiles[sourceType]!));
-                                setImagePreviewLabel(`مستند دخل: ${sourceType}`);
+                              if (typeof src.sourceImage === 'string' && src.sourceImage) {
+                                setImagePreview(src.sourceImage);
+                              } else if (src.sourceImage instanceof File) {
+                                setImagePreview(URL.createObjectURL(src.sourceImage));
                               }
+                              setImagePreviewLabel(`مستند دخل: ${src.sourceType}`);
                             }}
                           >عرض</button>
                         )}
-                        {incomeFiles[sourceType] && (
-                          <span style={{ color: '#2c5282', fontWeight: 500, fontSize: 13 }}>{incomeFiles[sourceType]!.name}</span>
+                        {src.sourceImage && src.sourceImage instanceof File && (
+                          <>
+                            <span style={{ color: '#2c5282', fontWeight: 500, fontSize: 13 }}>{(src.sourceImage as File).name}</span>
+                            <button type="button" style={{ fontSize: 12, padding: '2px 10px' }} onClick={() => {
+                              if (src.sourceImage) {
+                                setImagePreview(URL.createObjectURL(src.sourceImage as File));
+                                setImagePreviewLabel(`مستند دخل: ${src.sourceType}`);
+                              }
+                            }}>عرض</button>
+                          </>
                         )}
-                        {!incomeFiles[sourceType] && <span style={{ color: '#a0aec0', fontSize: 13 }}>لا يوجد ملف</span>}
+                        {!src.sourceImage && <span style={{ color: '#a0aec0', fontSize: 13 }}>لا يوجد ملف</span>}
                       </div>
                     </div>
                   ))}
                 </div>
               )}
-              {Object.keys(formData.incomeSources || {}).length > 0 && (
+              {/* عرض إجمالي الدخل */}
+              {incomeSources.length > 0 && (
                 <div style={{
                   display: 'flex',
                   justifyContent: 'flex-end',
@@ -1187,6 +1255,7 @@ const SignFamily = ({
                 </div>
               )}
             </div>
+            {/* اختيار البنك */}
             <div className={styles.inputGroup}>
               <label>البنك</label>
               <select
@@ -1199,6 +1268,7 @@ const SignFamily = ({
                 {saudiBanks.map(b => <option key={b} value={b}>{b}</option>)}
               </select>
             </div>
+            {/* رفع صورة الآيبان */}
             <div className={styles.inputGroup}>
               <label>إرفاق صورة الآيبان</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1221,9 +1291,9 @@ const SignFamily = ({
                   display: 'inline-block',
                   fontWeight: 500,
                 }}>
-                  {formData.ibanImage ? 'تحديث' : 'رفع ملف'}
+                  {(formData.ibanImage || userIbanImage) ? 'تحديث' : 'رفع ملف'}
                 </label>
-                {formData.ibanImage && (
+                {(formData.ibanImage || userIbanImage) && (
                   <button
                     type="button"
                     style={{
@@ -1234,17 +1304,19 @@ const SignFamily = ({
                       border: 'none',
                       cursor: 'pointer',
                       marginRight: 4,
-                      background: '#3182ce',
+                      background: '#3182ce', // أزرق
                       color: '#fff',
                       fontWeight: 500,
                       textAlign: 'center',
                       display: 'inline-block',
                     }}
                     onClick={() => {
-                      if (typeof formData.ibanImage === 'string') {
+                      if (typeof formData.ibanImage === 'string' && formData.ibanImage) {
                         setImagePreview(formData.ibanImage);
                       } else if (formData.ibanImage instanceof File) {
                         setImagePreview(URL.createObjectURL(formData.ibanImage));
+                      } else if (userIbanImage) {
+                        setImagePreview(userIbanImage);
                       }
                       setImagePreviewLabel('صورة الآيبان');
                     }}
@@ -1261,6 +1333,7 @@ const SignFamily = ({
         <div className={styles.card}>
           <h2 className={styles.title}>بيانات المرافقين</h2>
           <div className={styles.grid}>
+            {/* عدد المرافقين */}
             <div className={styles.inputGroup}>
               <label>عدد المرافقين</label>
               <select
@@ -1276,6 +1349,7 @@ const SignFamily = ({
                 ))}
               </select>
             </div>
+            {/* عدد الذكور */}
             {companionsCount > 0 && (
               <div className={styles.inputGroup}>
                 <label>عدد الذكور</label>
@@ -1289,6 +1363,7 @@ const SignFamily = ({
                 </select>
               </div>
             )}
+            {/* عدد الإناث */}
             {companionsCount > 0 && (
               <div className={styles.inputGroup}>
                 <label>عدد الإناث</label>
@@ -1299,6 +1374,7 @@ const SignFamily = ({
                 />
               </div>
             )}
+            {/* رفع كارت العائلة */}
             {companionsCount > 0 && (
               <div className={styles.inputGroup} style={{ gridColumn: 'span 3' }}>
                 <label>إرفاق كارت العائلة (صورة أو PDF)</label>
@@ -1325,42 +1401,47 @@ const SignFamily = ({
                     {formData.familyCardFile ? 'تحديث' : 'رفع ملف'}
                   </label>
                   {formData.familyCardFile && (
-                    <button
-                      type="button"
-                      style={{
-                        fontSize: 13,
-                        padding: '6px 16px',
-                        minWidth: 90,
-                        borderRadius: 6,
-                        border: 'none',
-                        cursor: 'pointer',
-                        marginRight: 4,
-                        background: '#3182ce',
-                        color: '#fff',
-                        fontWeight: 500,
-                        textAlign: 'center',
-                        display: 'inline-block',
-                      }}
-                      onClick={() => {
-                        if (typeof formData.familyCardFile === 'string') {
-                          setImagePreview(formData.familyCardFile);
-                        } else if (formData.familyCardFile instanceof File) {
-                          setImagePreview(URL.createObjectURL(formData.familyCardFile));
-                        }
-                        setImagePreviewLabel('كارت العائلة');
-                      }}
-                    >عرض</button>
+                    <>
+                      {/* <span style={{ color: '#2c5282', fontWeight: 500, fontSize: 13 }}>يوجد ملف</span> */}
+                      <button
+                        type="button"
+                        style={{
+                          fontSize: 13,
+                          padding: '6px 16px',
+                          minWidth: 90,
+                          borderRadius: 6,
+                          border: 'none',
+                          cursor: 'pointer',
+                          marginRight: 4,
+                          background: '#3182ce', // أزرق
+                          color: '#fff',
+                          fontWeight: 500,
+                          textAlign: 'center',
+                          display: 'inline-block',
+                        }}
+                        onClick={() => {
+                          if (typeof formData.familyCardFile === 'string' && formData.familyCardFile != null) {
+                            setImagePreview(formData.familyCardFile);
+                          } else if (formData.familyCardFile instanceof File) {
+                            setImagePreview(URL.createObjectURL(formData.familyCardFile));
+                          }
+                          setImagePreviewLabel('كارت العائلة');
+                        }}
+                      >عرض</button>
+                    </>
                   )}
                 </div>
               </div>
             )}
           </div>
+          {/* بيانات المرافقين */}
           {companionsCount > 0 && companions.length > 0 && (
             <div className={styles.companionsScrollBox} style={{ marginTop: 24 }}>
               {companions.map((companion, idx) => (
                 <div key={idx} className={styles.card} style={{ marginBottom: 18, background: '#f9f9fb' }}>
                   <h3 style={{ color: '#4a5a7a', fontWeight: 700, marginBottom: 12 }}>بيانات المرافق {idx + 1}</h3>
                   <div className={styles.grid}>
+                    {/* الاسم الرباعي */}
                     <div className={styles.inputGroup}>
                       <label>الاسم الرباعي</label>
                       <input
@@ -1372,6 +1453,7 @@ const SignFamily = ({
                         }}
                       />
                     </div>
+                    {/* رقم الهوية */}
                     <div className={styles.inputGroup}>
                       <label>رقم الهوية</label>
                       <input
@@ -1383,6 +1465,7 @@ const SignFamily = ({
                         }}
                       />
                     </div>
+                    {/* تاريخ الميلاد هجري/ميلادي + العمر */}
                     <div className={styles.inputGroup}>
                       <label>تاريخ الميلاد</label>
                       <div className={styles.dateRow}>
@@ -1407,6 +1490,7 @@ const SignFamily = ({
                             onChange={e => {
                               const arr = [...companions];
                               arr[idx].birthDate = e.target.value;
+                              // حساب العمر ميلادي
                               let ageNum = 0;
                               const birthDateObj = new Date(e.target.value);
                               if (!isNaN(birthDateObj.getTime())) {
@@ -1431,6 +1515,7 @@ const SignFamily = ({
                                 const [_, m, d] = companion.birthDate ? companion.birthDate.split('-') : [undefined, '', ''];
                                 const arr = [...companions];
                                 arr[idx].birthDate = `${year}-${m || ''}-${d || ''}`;
+                                // حساب العمر هجري
                                 let ageNum = 0;
                                 if (year) {
                                   const hijriYear = getCurrentHijriYear();
@@ -1476,10 +1561,12 @@ const SignFamily = ({
                         )}
                       </div>
                     </div>
+                    {/* العمر */}
                     <div className={styles.inputGroup}>
                       <label>العمر</label>
                       <input type="text" value={companion.age} disabled />
                     </div>
+                    {/* المرحلة الدراسية */}
                     <div className={styles.inputGroup}>
                       <label>المرحلة الدراسية</label>
                       <select
@@ -1498,6 +1585,7 @@ const SignFamily = ({
                         <option value="جامعي">جامعي</option>
                       </select>
                     </div>
+                    {/* تفاصيل الصف */}
                     {(companion.studyLevel === 'ابتدائي' || companion.studyLevel === 'متوسط' || companion.studyLevel === 'ثانوي') && (
                       <div className={styles.inputGroup}>
                         <label>الصف</label>
@@ -1522,6 +1610,7 @@ const SignFamily = ({
                         </select>
                       </div>
                     )}
+                    {/* الحالة الصحية */}
                     <div className={styles.inputGroup}>
                       <label>الحالة الصحية</label>
                       <select
@@ -1538,6 +1627,7 @@ const SignFamily = ({
                         <option value="غير سليم">غير سليم</option>
                       </select>
                     </div>
+                    {/* نوع الإعاقة */}
                     {companion.healthStatus === 'غير سليم' && (
                       <div className={styles.inputGroup}>
                         <label>نوع الإعاقة</label>
@@ -1555,6 +1645,7 @@ const SignFamily = ({
                         </select>
                       </div>
                     )}
+                    {/* صلة القرابة */}
                     <div className={styles.inputGroup}>
                       <label>صلة القرابة</label>
                       <input
@@ -1576,6 +1667,7 @@ const SignFamily = ({
     }
   };
 
+  // قائمة البنوك السعودية
   const saudiBanks = [
     "الأهلي السعودي",
     "الراجحي",
@@ -1594,6 +1686,7 @@ const SignFamily = ({
     "بنك الأول"
   ];
 
+  // مصادر الدخل
   const incomeOptions = [
     { key: "راتب عادي", label: "راتب عادي" },
     { key: "راتب تقاعدي", label: "راتب تقاعدي" },
@@ -1601,27 +1694,62 @@ const SignFamily = ({
     { key: "حساب مواطن", label: "حساب مواطن" },
   ];
 
+  // دوال مساعدة
   const toggleIncomeSource = (sourceType: string) => {
-    setFormData((prev) => {
-      const newIncomeSources = { ...prev.incomeSources };
-      if (newIncomeSources[sourceType]) {
-        delete newIncomeSources[sourceType];
+    setIncomeSources((prev: IncomeSource[]) => {
+      const exists = prev.find((src: IncomeSource) => src.sourceType === sourceType);
+      if (exists) {
+        return prev.filter((src: IncomeSource) => src.sourceType !== sourceType);
       } else {
-        newIncomeSources[sourceType] = "";
+        return [...prev, { sourceType, sourceAmount: '', sourceImage: null }];
       }
-      return { ...prev, incomeSources: newIncomeSources };
     });
-    setIncomeFiles((prev) => {
-      const newFiles = { ...prev };
-      if (newFiles[sourceType]) {
-        delete newFiles[sourceType];
-      }
+    setIncomeFiles(files => {
+      const newFiles = { ...files };
+      if (files[sourceType]) delete newFiles[sourceType];
       return newFiles;
     });
   };
+  const updateIncomeSource = (sourceType: string, field: string, value: any) => {
+    setIncomeSources((prev: IncomeSource[]) => prev.map((src: IncomeSource) =>
+      src.sourceType === sourceType ? { ...src, [field]: value } : src
+    ));
+  };
+
+  // دالة مسح البيانات المؤقتة من localStorage
+  const clearTempData = () => {
+    localStorage.removeItem(TEMP_COMPANIONS_KEY);
+    localStorage.removeItem(TEMP_COMPANIONS_COUNT_KEY);
+    localStorage.removeItem(TEMP_MALE_COUNT_KEY);
+  };
+
+  // دالة حفظ البيانات المؤقتة (للاستخدام عند الحاجة)
+  const saveTempData = () => {
+    localStorage.setItem(TEMP_COMPANIONS_KEY, JSON.stringify(companions));
+    localStorage.setItem(TEMP_COMPANIONS_COUNT_KEY, companionsCount.toString());
+    localStorage.setItem(TEMP_MALE_COUNT_KEY, maleCount.toString());
+  };
+
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreviewLabel, setImagePreviewLabel] = useState<string>("");
+
+  // --- جلب صور من localStorage.user إذا لم تكن موجودة في formData ---
+  const userStr = localStorage.getItem('user');
+  let userIbanImage = '';
+  let userRentImage = '';
+  let userIdImagePath = '';
+  if (userStr) {
+    try {
+      const userObj = JSON.parse(userStr);
+      if (userObj.ibanImage) userIbanImage = userObj.ibanImage;
+      if (userObj.rentImage) userRentImage = userObj.rentImage;
+      if (userObj.idImagePath) userIdImagePath = userObj.idImagePath;
+    } catch {}
+  }
 
   return (
-    <div className="lg:!mt-10 container mx-auto lg:px-5" style={{ display: 'flex', direction: 'rtl', flexDirection: isMobile ? 'column' : 'row', alignItems: 'stretch', width: '100%' }}>
+    <div className="lg:!mt-10  container mx-auto  lg:px-5" style={{ display: 'flex', direction: 'rtl', flexDirection: isMobile ? 'column' : 'row', alignItems: 'stretch', width: '100%' }}>
+      {/* Progress Stepper */}
       <div className="flex flex-col items-center justify-start h-fit sticky top-[120px]" style={{ 
         width: isMobile ? '100%' : '350px', 
         minWidth: isMobile ? 'auto' : '350px', 
@@ -1645,7 +1773,7 @@ const SignFamily = ({
                   style={{ width: '45px', height: '45px', fontSize: '1.3rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
                   {step > idx + 1 ? (
-                    <span>✓</span>
+                    <span>&#10003;</span>
                   ) : (
                     React.cloneElement(stepIcons[idx], { style: { transform: 'scale(1.3)' } })
                   )}
@@ -1665,7 +1793,10 @@ const SignFamily = ({
           ))}
         </div>
       </div>
+      
+      {/* Form Wrapper */}
       <div className={styles.wrapper} style={{ flex: 1 }}>
+        {/* Steps with animation */}
         <div
           ref={formContainerRef}
           className={ 
@@ -1684,6 +1815,7 @@ const SignFamily = ({
         > 
           {renderStep()}
         </div>
+        {/* Navigation Buttons */}
         <div className={styles.buttonRow}>
           {step > 1 && (
             <button className={styles.navBtn} onClick={handleBack}>
@@ -1731,3 +1863,4 @@ const SignFamily = ({
 };
 
 export default SignFamily;
+ 

@@ -20,7 +20,7 @@ const seasonalProjects = [
 
 const SeasonalProjectsSection = () => (
   <section className="projects-section ">
-    <h2 className="my-section-title !mb-12">المشاريع الموسمية</h2>
+    <h2 className="my-section-title !mb-12">مشاريعنا </h2>
     {/* <div className="projects-grid">
       {seasonalProjects.map(({ img, title, desc }, i) => (
         <div className="project-card" key={i}>

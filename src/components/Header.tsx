@@ -16,7 +16,8 @@ const Header = () => {
 
   const handleLogout = () => {
     // dispatch(logOut());
-    localStorage.removeItem("user");
+    // localStorage.removeItem("user");
+    localStorage.clear()
     window.location.reload();
   };
 

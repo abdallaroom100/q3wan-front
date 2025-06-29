@@ -1,7 +1,7 @@
 const NewsSection = () => (
   <section className="new-section">
     <div className="container">
-      <h2 className="section-title">جديدنا</h2>
+      <h2 className="section-title">احدث الاخبار </h2>
       <div className="cards">
         {[
           {

@@ -10,7 +10,7 @@ import Footer from "../../components/Footer";
 import CircularGallery from "../../../yes/CircularSlider";
 import { RootState } from "../../store/store";
 import { setState } from "../../store/slices/home";
-
+import { FaWhatsapp } from "react-icons/fa";
 // Skeleton loader for CircularGallery
 const GallerySkeleton = () => (
   <div className="animate-pulse">
@@ -56,6 +56,11 @@ const Home = () => {
 
   return (
     <div>
+      <div className="fixed bottom-[2rem] cursor-pointer hover:bg-green-600 transition-colors right-[2rem] w-[80px] h-[80px] rounded-full bg-green-500  z-[100] flex justify-center items-center ">
+      <a href="#">
+        <FaWhatsapp size={50} color="white"/>
+      </a>
+      </div>
       <Slider />
       <NewsSection />
       <StatsSection />
@@ -63,7 +68,7 @@ const Home = () => {
       <SeasonalProjectsSection />
       <StrategicPartners />
 
-      <div className="text-center">
+      {/* <div className="text-center">
         <h2 className="text-4xl font-bold text-gray-800">معرض الصور</h2>
         <div className="w-24 h-1 bg-[#4a548dfc] mx-auto rounded-full"></div>
       </div>
@@ -71,7 +76,7 @@ const Home = () => {
       <div style={{ height: '600px', position: 'relative' }}>
         {galleryComponent}
       </div>
-      
+       */}
       <Footer />
     </div>
   );

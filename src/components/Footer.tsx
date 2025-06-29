@@ -1,6 +1,6 @@
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTwitter, faFacebookF, faInstagram, faYoutube } from '@fortawesome/free-brands-svg-icons'
+import { faTwitter, faFacebookF, faInstagram, faYoutube,faWhatsapp } from '@fortawesome/free-brands-svg-icons'
 import './Footer.css'
 
 const Footer = () => {
@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="footer-container">
         <div className="footer-logo">
           <img src="/img/logo.png" alt="شعار الجمعية" />
-          <p>جمعية مبرة القعوان الخيرية<br />عطاء يستمر</p>
+          <p> مبرة القعوان الخيرية<br />عطاء يستمر</p>
         </div>
 
         <div className="footer-links">
@@ -30,6 +30,7 @@ const Footer = () => {
             <a href="#"><FontAwesomeIcon icon={faFacebookF} /></a>
             <a href="#"><FontAwesomeIcon icon={faInstagram} /></a>
             <a href="#"><FontAwesomeIcon icon={faYoutube} /></a>
+            <a href="#"><FontAwesomeIcon icon={faWhatsapp} /></a>
           </div>
         </div>
       </div>
