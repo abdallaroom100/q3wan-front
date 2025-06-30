@@ -112,6 +112,9 @@ export default function ArabicAuthForm() {
     if (error) return hotToast({ type: "error", message: error });
     console.log(userData);
 
+    setTimeout(() => {
+      setActiveTab("login");
+    }, 1000);
     return hotToast({ type: "success", message: "تم إنشاء الحساب بنجاح!" });
   };
 
