@@ -11,6 +11,7 @@ import CircularGallery from "../../../yes/CircularSlider";
 import { RootState } from "../../store/store";
 import { setState } from "../../store/slices/home";
 import { FaWhatsapp } from "react-icons/fa";
+import SocialMediaIcons from "../../common/SocialIcom";
 // Skeleton loader for CircularGallery
 const GallerySkeleton = () => (
   <div className="animate-pulse">
@@ -56,11 +57,12 @@ const Home = () => {
 
   return (
     <div>
-      <div className="fixed bottom-[2rem] cursor-pointer hover:bg-green-600 transition-colors right-[2rem] w-[80px] h-[80px] rounded-full bg-green-500  z-[100] flex justify-center items-center ">
+      <SocialMediaIcons />
+      {/* <div className="fixed bottom-[2rem] cursor-pointer hover:bg-green-600 transition-colors right-[2rem] w-[80px] h-[80px] rounded-full bg-green-500  z-[100] flex justify-center items-center ">
       <a href="#">
         <FaWhatsapp size={50} color="white"/>
       </a>
-      </div>
+      </div> */}
       <Slider />
       <NewsSection />
       <StatsSection />

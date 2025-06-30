@@ -432,9 +432,9 @@ display: inline-block;
 .my-section-title::after {
 content: '';
 position: absolute;
-width: 60px;
+width: 70px !important;
 height: 3px;
-background-color: rgb(149,122,77);
+background-color: #3A3D6C;
 top: 50%;
 transform: translateY(-50%);
 }
@@ -526,3 +526,16 @@ box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 
 
 
+
+@keyframes pulse-green {
+  0%, 100% {
+    background-color: #166534; /* green-800 */
+  }
+  50% {
+    background-color: #19a64d; /* green-500 */
+  }
+}
+
+.pulse-green {
+  animation: pulse-green 2s infinite ease-in-out;
+}

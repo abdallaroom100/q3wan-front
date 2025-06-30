@@ -22,7 +22,7 @@ const Header = () => {
   };
 
   return (
-    <header className="flex justify-between items-center gap-6 !justify-center !px-3 ">
+    <header className="flex justify-between items-center !gap-1 md:gap-6  lg:!px-10 px-4  ">
        <button className="logo cursor-pointer" onClick={() => history('/')}>
 
         <img src="img/logo.png" className="logo" alt="شعار الجمعية" />

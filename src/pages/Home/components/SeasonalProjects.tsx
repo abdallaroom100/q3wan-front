@@ -19,24 +19,13 @@ const seasonalProjects = [
 ];
 
 const SeasonalProjectsSection = () => (
-  <section className="projects-section ">
-    <h2 className="my-section-title !mb-12">مشاريعنا </h2>
-    {/* <div className="projects-grid">
-      {seasonalProjects.map(({ img, title, desc }, i) => (
-        <div className="project-card" key={i}>
-          <img src={img} alt="صورة المشروع" />
-          <div className="card-content">
-            <h3>{title}</h3>
-            <p>{desc}</p>
-            <a href="#" className="card-btn">اعرف أكثر</a>
-          </div>
-        </div>
-      ))}
-    </div> */}
+  <section className=" ">
+    {/* <h2 className="my-section-title !mb-12">مشاريعنا </h2>
+   
  <ProjectCard />
     <div className="show-more-container">
-      {/* <button id="show-more-btn">عرض جميع المشاريع</button> */}
-    </div>
+    
+    </div> */}
   </section>
 );
 

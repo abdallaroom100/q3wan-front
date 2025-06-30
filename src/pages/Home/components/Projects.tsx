@@ -2,93 +2,94 @@ const projects = [
   {
     img: "img/كفالة يتيم.jpg",
     title: "كفالة يتيم",
-    cost: "معدل 2500 ريال سنوياً",
+    cost: "معدل 3600 ريال شهريا",
     beneficiaries: "فئة الأيتام حسب المعايير",
     card: "تحويل بنكي",
-    period: "فترة الصرف ربع سنوي",
+    period: "فترة الصرف شهرياً",
     bgColor: "bg-amber-600",
     bgGradient: "from-amber-600 to-orange-500"
   },
   {
     img: "img/مشروع السله الغذائية.jpg",
     title: "السلة الغذائية",
-    cost: "معدل 3600 ريال سنوياً",
-    beneficiaries: "جميع الفئات حسب المعايير",
-    card: "بطاقة تسوق",
+    cost: "معدل 3600 ريال شهريا",
+    beneficiaries: "جميع الأسر",
+    card: "تحويل بنكي",
     period: "فترة الصرف شهرياً",
     bgColor: "bg-emerald-600",
     bgGradient: "from-emerald-600 to-emerald-500"
   },
-  {
-    img: "img/test.gif",
-    title: "السلة الغذائية",
-    cost: "معدل 3600 ريال سنوياً",
-    beneficiaries: "جميع الفئات حسب المعايير",
-    card: "بطاقة تسوق",
-    period: "فترة الصرف شهرياً",
-    bgColor: "bg-emerald-600",
-    bgGradient: "from-emerald-600 to-emerald-500"
-  },
+  
   {
     img: "img/مشروع سقيا الماء.jpg",
     title: "مشروع سقيا المياه",
-    cost: "معدل 1000 ريال",
+    cost: "معدل 40 الف ريال",
     beneficiaries: "المناطق المحتاجة",
     card: "تنفيذ مباشر",
-    period: "حسب الحاجة",
+    period: "يومي",
     bgColor: "bg-cyan-600",
     bgGradient: "from-cyan-600 to-blue-500"
   },
-    {
-      img: "img/SLID 2.jpg",
-      title: "كسوة العيد",
-      cost: "معدل 500 ريال",
-      beneficiaries: "الأطفال والأسر المحتاجة",
-      card: "توزيع مباشر",
-      period: "مرة واحدة سنوياً",
-      bgColor: "bg-purple-600",
-      bgGradient: "from-purple-600 to-purple-500"
-    },
-    {
-      img: "img/كسوة الشتاء.jpg",
-      title: "كسوة الشتاء",
-      cost: "معدل 1300 ريال",
-      beneficiaries: "الأطفال والأسر المحتاجة",
-      card: "توزيع مباشر",
-      period: "مرة واحدة سنوياً",
-      bgColor: "bg-purple-600",
-      bgGradient: "from-purple-600 to-purple-500"
-    },
-    {
-      img: "img/مشروع الحقيبة المدرسية.jpg",
-      title: "الحقيبة المدرسية",
-    cost: "معدل 300 ريال",
-    beneficiaries: "الطلاب المحتاجين",
+  {
+    img: "img/مشروع الحقيبة المدرسية.jpg",
+    title: "الحقيبة المدرسية",
+  cost: "معدل 500 ريال",
+  beneficiaries: "الطلاب المحتاجين",
+  card: "توزيع مباشر",
+  period: "بداية العام الدراسي",
+  bgColor: "bg-rose-600",
+  bgGradient: "from-rose-600 to-pink-500"
+  },
+  {
+    img: "img/مشروع توزيع اللحوم.jpg",
+    title: "اللحوم",
+    cost: "معدل 700 ذبيحة سنويا ",
+    beneficiaries: " الأسر المحتاجة",
     card: "توزيع مباشر",
-    period: "بداية العام الدراسي",
+    period: "كل شهرين",
     bgColor: "bg-rose-600",
     bgGradient: "from-rose-600 to-pink-500"
+  },
+  {
+    img: "img/كسوة الشتاء.jpg",
+    title: "كسوة الشتوية",
+      cost: "معدل 16 الف ريال",
+      beneficiaries: " الأسر المحتاجة",
+      card: "توزيع مباشر",
+      period: "مرة واحدة سنوياً",
+      bgColor: "bg-purple-600",
+      bgGradient: "from-purple-600 to-purple-500"
     },
+  {
+    img: "img/SLID 2.jpg",
+    title: "كسوة العيد",
+    cost: "معدل 500 ريال",
+    beneficiaries: "الأطفال والأسر المحتاجة",
+    card: "الحوالة البنكية",
+    period: "مرة واحدة سنوياً",
+    bgColor: "bg-purple-600",
+    bgGradient: "from-purple-600 to-purple-500"
+  },
     {
       img: "img/مشروع توزيع التمور.jpg",
-      title: "مشروع سقيا المياه",
-      cost: "معدل 1000 ريال",
-      beneficiaries: "المناطق المحتاجة",
+      title: "توزيع التمور",
+      cost: "كمية التمور الموزعة: 5600 كيلو جرام",
+      beneficiaries: "الأسر المحتاجة ",
       card: "تنفيذ مباشر",
-      period: "حسب الحاجة",
+      period: "مرة واحدة",
       bgColor: "bg-cyan-600",
       bgGradient: "from-cyan-600 to-blue-500"
     },
     {
-      img: "img/مشروع توزيع اللحوم.jpg",
-      title: "الحقيبة المدرسية",
-      cost: "معدل 300 ريال",
-      beneficiaries: "الطلاب المحتاجين",
-      card: "توزيع مباشر",
-      period: "بداية العام الدراسي",
-      bgColor: "bg-rose-600",
-      bgGradient: "from-rose-600 to-pink-500"
-    }
+      img: "img/condition.jpg",
+      title: "توزيع المكيفات وصيانتها",
+      cost: "معدل 30 الف ريال سنويا",
+      beneficiaries: "الأسر المحتاجة",
+      card: "تنفيذ مباشر",
+      period: "مرة واحدة",
+      bgColor: "bg-cyan-600",
+      bgGradient: "from-cyan-600 to-blue-500"
+    },
   ];
   
   const ProjectsSection = () => {
@@ -96,8 +97,8 @@ const projects = [
       <div className="min-h-screen bg-gray-100 py-12 px-4" dir="rtl">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">مشاريعنا</h2>
-            <div className="w-24 h-1 bg-[#4a548dfc] mx-auto rounded-full"></div>
+            <h2 className="my-section-title !text-4xl font-bold text-gray-800 mb-4">مشاريعنا</h2>
+            {/* <div className="w-24 h-1 bg-[#4a548dfc] mx-auto rounded-full"></div> */}
           </div>
           
           {/* Grid responsive: 1 column on mobile, 2 on tablet, 3 on desktop */}
