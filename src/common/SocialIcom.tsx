@@ -18,7 +18,7 @@ import { FaVoicemail } from "react-icons/fa";
 export default function SocialMediaIcons() {
   const [visible, setVisible] = useState(true);
   const [open, setOpen] = useState(false);
-  const iconsRef = useRef<HTMLButtonElement[]>([]);
+  const iconsRef = useRef<HTMLAnchorElement[]>([]);
 
 //   setVisible(true);
   // Show button on scroll
@@ -63,14 +63,14 @@ export default function SocialMediaIcons() {
   const socialLinks = [
     {
       icon: <MdEmail />,
-      link: "#",
+      link: "mailto:info@alqawan.com",
       color: "bg-[#3A3D6C]",
       size: "60px",
     },
   
     {
       icon: <FaWhatsapp />,
-      link: "https://api.whatsapp.com/send?phone=966566690098",
+      link: "https://api.whatsapp.com/send?phone=966537410089",
       color: "bg-[#3A3D6C]",
       size: "60px",
     },
@@ -82,20 +82,23 @@ export default function SocialMediaIcons() {
     <div className="fixed bottom-5 right-4 sm:bottom-8 sm:right-8 flex flex-col items-center space-y-2 z-50">
       {/* Social Icons */}
       {open &&
-        socialLinks.map((item, index) => (
-          <a key={index} href={item.link} target="_blank" rel="noopener noreferrer">
-            <button
-              ref={(el) => {
-                if (el) iconsRef.current[index] = el;
-              }}
+        socialLinks.map((item, index) => {
+          const isMail = item.link.startsWith('mailto:');
+          return (
+            <a
+              key={index}
+              href={item.link}
+              {...(!isMail && { target: "_blank", rel: "noopener noreferrer" })}
               className={`text-white cursor-pointer rounded-full flex items-center justify-center text-2xl shadow-md ${item.color} w-12 h-12 sm:w-[60px] sm:h-[60px]`}
               title={item.link}
-              rel="noopener noreferrer"
+              ref={el => {
+                if (el) iconsRef.current[index] = el;
+              }}
             >
               {item.icon}
-            </button>
-          </a>
-        ))}
+            </a>
+          );
+        })}
 
       {/* Toggle Button */}
       <button

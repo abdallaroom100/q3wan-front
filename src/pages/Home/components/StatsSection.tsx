@@ -33,8 +33,10 @@ const StatsSection = () => {
   }, []);
 
   return (
-    <section>
-      <h2 className="title">إحصائيات مبرة القعوان الخيرية عام 2024</h2>
+    <section className="md:!mt-22 !mt-12 !mb-10 md:!mb-18">
+      {/* <h2 className=" mt-5 my-section-title justify-center  font-bold">إحصائيات   عام 2024</h2> */}
+
+      <h2 className="my-section-title  !text-xl md:!text-3xl !mt-19 !mb-8 text-center mx-auto !flex !justify-center !items-center !w-fit">  إحصائيات عام 2024</h2>
       <div className="stats-container">
         {stats.map(({ label, target }, i) => (
           <div className="stat-box" key={i}>

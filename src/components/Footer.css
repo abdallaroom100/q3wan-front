@@ -48,10 +48,16 @@
 }
 
 .footer-logo img {
-  max-width: 200px;
-  height: auto;
-  filter: brightness(0) invert(1);
+  width: 170px;
+  height: 170px;
+  max-width: unset;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #fff;
+  filter: none;
   transition: transform 0.3s ease;
+  display: block;
+  margin: 0 auto;
 }
 
 .footer-logo img:hover {

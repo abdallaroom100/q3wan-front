@@ -88,7 +88,7 @@
   top: 0;
   width: 7px;
   height: 100%;
-  background: linear-gradient(180deg, #3A3D6C 0%, #00cec9 100%);
+  background:  #3A3D6C;
   border-radius: 0 12px 12px 0;
   z-index: 2;
   opacity: 0.85;
