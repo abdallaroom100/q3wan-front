@@ -5,6 +5,7 @@ import useUpdateUserData from "../../hooks/Auth/update/useUpdateUserData";
 import React from "react";
 import { FaUser, FaHome, FaUsers } from 'react-icons/fa';
 import ProgressSteps from '../../components/ProgressSteps';
+import { useNavigate } from "react-router-dom";
 
 // تعريف سنوات وشهور وأيام الهجري
 const hijriYears: number[] = Array.from({length: 201}, (_, i) => 1300 + i); // 1300-1500
@@ -161,7 +162,23 @@ const SignFamily = ({
 }: {
   userData: UserData |undefined;
 }) => {
- 
+   
+   // Safely parse signFamilyFormData from localStorage, fallback to empty object if not present or invalid
+   const singfamily = (() => {
+     try {
+       const data = localStorage.getItem("signFamilyFormData");
+       return data ? JSON.parse(data) : {};
+     } catch {
+       return {};
+     }
+   })();
+    console.log(singfamily.facilitiesInfo)
+   const navigate = useNavigate()
+   useEffect(() => {
+     if(!userData){
+       navigate("/login")
+     }
+   }, [userData]);
   const {updateUserData} = useUpdateUserData()
   const [step, setStep] = useState(() => {
     const saved = localStorage.getItem(STEP_KEY);
@@ -375,6 +392,23 @@ const SignFamily = ({
     }
   }, []);
 
+  // عند أول تحميل: إذا كانت بيانات المرافقين موجودة في signFamilyFormData، عبئها في companions
+  useEffect(() => {
+    if (
+      Array.isArray(singfamily.facilitiesInfo) &&
+      singfamily.facilitiesInfo.length > 0 &&
+      (!companions || companions.length === 0)
+    ) {
+      // تحويل identityNumber إلى id
+      const companionsWithId = singfamily.facilitiesInfo.map((c: any) => ({
+        ...c,
+        id: c.identityNumber || c.id || ""
+      }));
+      setCompanions(companionsWithId);
+      setCompanionsCount(singfamily.facilitiesInfo.length);
+    }
+  }, []);
+
   // --- Save to localStorage on change ---
   useEffect(() => {
     localStorage.setItem(FORM_KEY, JSON.stringify(formData));
@@ -560,16 +594,22 @@ const SignFamily = ({
     const formDataToSend = new FormData();
 
     // أضف بيانات المرافقين مباشرة في housemate (فقط الحقول المطلوبة)
-    const housemateToSend = companions.map((h: any) => ({
-      name: String(h.name ?? ''),
-      identityNumber: String(h.identityNumber ?? h.id ?? ''),
-      birthDate: String(h.birthDate ?? ''),
-      kinship: String(h.kinship ?? ''),
-      dateType: String(h.dateType ?? ''),
-      studyLevel: String(h.studyLevel ?? ''),
-      healthStatus: String(h.healthStatus ?? ''),
-      disabilityType: String(h.disabilityType ?? '')
-    }));
+    const housemateToSend = companions.map((h: any) => {
+      const base = {
+        name: String(h.name ?? ''),
+        identityNumber: String(h.identityNumber ?? h.id ?? ''),
+        birthDate: String(h.birthDate ?? ''),
+        kinship: String(h.kinship ?? ''),
+        dateType: String(h.dateType ?? ''),
+        studyLevel: String(h.studyLevel ?? ''),
+        healthStatus: String(h.healthStatus ?? ''),
+        disabilityType: String(h.disabilityType ?? '')
+      };
+      if (h.studyLevel && h.studyLevel !== 'جامعي') {
+        return { ...base, studyGrade: String(h.studyGrade ?? '') };
+      }
+      return base;
+    });
     formDataToSend.append('housemate', JSON.stringify(housemateToSend));
     // أضف عدد المرافقين وعدد الذكور مع الفورم بالأسماء المطلوبة
     formDataToSend.append('numberOfFacilities', companionsCount.toString());

@@ -35,6 +35,7 @@ const useUpdateUserData = () => {
         // Update incomeSources with the new value from the response
         
         userObj.incomeSources = res.data.data.incomeSources;
+        
         localStorage.setItem("user", JSON.stringify(userObj));
       });
 

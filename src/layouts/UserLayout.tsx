@@ -16,6 +16,7 @@ function UserLayout() {
       userData.token = token;
       dispatch(setUser(userData));
       localStorage.setItem("user", JSON.stringify(userData));
+      console.log(userData)
     }
   }, [userData, dispatch]);
 

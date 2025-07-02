@@ -61,7 +61,7 @@ export default function ArabicAuthForm() {
       localStorage.setItem("user", JSON.stringify(userData))
       setTimeout(() => {
         window.location.reload();
-      }, 800);
+      }, 500);
     }
     return;
   };
