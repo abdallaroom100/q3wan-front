@@ -7,11 +7,8 @@ import Login from "./pages/Login";
 import axios from "axios";
 import { MoonLoader } from "react-spinners";
 
-import { useDispatch } from "react-redux";
-import useFetchCurrentUser from "./hooks/Auth/useFetchCurrentUser";
-import { useEffect } from "react";
-import { setUser } from "./store/slices/user";
-import { Suspense, lazy } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Suspense, lazy, useEffect, useState } from "react";
 
 // Import all components directly
 import Home from "./pages/Home";
@@ -24,6 +21,10 @@ import StrategicPartners from "./pages/Home/components/StrategicPartners";
 import CircularGallery from "../yes/CircularSlider";
 import Footer from "./components/Footer";
 import SignFamily from "./pages/SignFamily/testIndex";
+import UserLayout from "./layouts/UserLayout";
+import AdminLayout from "./layouts/AdminLayout";
+import useFetchCurrentUser from "./hooks/Auth/useFetchCurrentUser";
+import { UserData } from "./pages/SignFamily/useFamilyForm";
 
 // Lazy load Dashboard, AdminLogin, and BeneficiaryDetails
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -35,37 +36,35 @@ config.autoAddCss = false;
 
 function App() {
   const dispatch = useDispatch()
-  const {isLoading, userData} = useFetchCurrentUser()
-   console.log(import.meta.env.VITE_NODE_ENV)
-  useEffect(() => {
-      if (userData) {
-        const token = JSON.parse(localStorage.getItem("user") || "")?.token;
-        userData.token = token;
-        dispatch(setUser(userData));
-        localStorage.setItem("user", JSON.stringify(userData));
-      }
-  }, [userData, dispatch]);
+  console.log(import.meta.env.VITE_NODE_ENV)
+  const {userData,isLoading} = useFetchCurrentUser()
 
-  if (isLoading) {
-      return <div className="h-screen w-screen flex justify-center items-center">
-        <MoonLoader color="#000" />
+
+    if(isLoading){
+      return <div className="h-screen w-full flex justify-center items-center">
+        <MoonLoader />
       </div>
-  }
- 
+    }
+    
   return (
     <BrowserRouter>
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
-          {/* Public/General Layout */}
-          <Route element={<Layout><Outlet /></Layout>}>
+          {/* User Layout */}
+          <Route element={<Layout><UserLayout /></Layout>}>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={userData ? <Navigate to="/" /> : <Login />} />
-            <Route path='/sign-family' element={userData ? <SignFamily userData={userData} /> : <Navigate to="/login" />} />
+            <Route path="/login" element={<Login />} />
+            <Route path='/sign-family' element={<SignFamily userData={userData}/>} />
           </Route>
           {/* Admin Layout: No Header, No Layout */}
+          <Route element= {<Layout>
+            <AdminLayout />
+          </Layout>}>
+
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/beneficiary/:id" element={<BeneficiaryDetails />} />
+          </Route>
         </Routes>
       </Suspense>
     </BrowserRouter>

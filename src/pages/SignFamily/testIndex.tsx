@@ -159,8 +159,9 @@ function validateForm(formData: UserData, companions: any[], incomeSources: Inco
 const SignFamily = ({
   userData,
 }: {
-  userData: UserData | undefined;
+  userData: UserData |undefined;
 }) => {
+ 
   const {updateUserData} = useUpdateUserData()
   const [step, setStep] = useState(() => {
     const saved = localStorage.getItem(STEP_KEY);
@@ -200,12 +201,12 @@ const SignFamily = ({
     return [];
   });
   const [incomeFiles, setIncomeFiles] = useState<{ [key: string]: File | null }>({});
- 
+
   const [formData, setFormData] = useState<UserData>(() => {
     const saved = localStorage.getItem(FORM_KEY);
     if (saved) return { ...JSON.parse(saved) };
     return {
-      firstName: userData?.firstName || "",
+      firstName: userData?.firstName  || "",
       secondName: userData?.secondName || "",
       thirdName: userData?.thirdName || "",
       lastName: userData?.lastName || "",
@@ -256,7 +257,7 @@ const SignFamily = ({
     };
   });
   
-  console.log(userData)
+ 
   const formContainerRef = useRef<HTMLDivElement>(null);
   const [fixedHeight, setFixedHeight] = useState<number | undefined>(undefined);
 
@@ -512,7 +513,7 @@ const SignFamily = ({
         return { ...companion, age: ageNum };
       })
     );
-  }, [companionsCount, companions, dateType]);
+  }, [companionsCount, dateType]);
 
   // إضافة كروت فارغة جديدة عند زيادة عدد المرافقين
   useEffect(() => {
@@ -537,6 +538,15 @@ const SignFamily = ({
       setCompanions(companions.slice(0, companionsCount));
     }
   }, [companionsCount]);
+
+  useEffect(() => {
+    if (userData) {
+      setFormData({
+        ...userData,
+        // أي تحويلات إضافية تحتاجها هنا
+      });
+    }
+  }, [userData]);
 
   const handleSubmit = async () => {
     // تحقق من صحة البيانات أولاً برسالة دقيقة

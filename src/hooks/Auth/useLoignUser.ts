@@ -1,6 +1,9 @@
+import { setUser } from "../../store/slices/user";
 import axios from "axios";
+import { useDispatch } from "react-redux";
 
 const useLoginUser = () => {
+  const dispatch = useDispatch()
   const loginUser = async (
     loginData: any
   ): Promise<{
@@ -13,6 +16,7 @@ const useLoginUser = () => {
         "https://children-khaki.vercel.app/user/login",
         loginData
       );
+       dispatch(setUser(response.data))
       return { success: true, userData: response.data };
     } catch (error: any) {
       const errorMessage =

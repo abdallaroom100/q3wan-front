@@ -62,8 +62,7 @@ const Dashboard = () => {
           <button 
             className={styles.navButton}
             onClick={() => {
-              localStorage.removeItem("isAdmin");
-              navigate("/admin-login");
+          
             }}
           >
             تسجيل الخروج

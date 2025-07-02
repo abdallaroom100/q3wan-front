@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import AuthHeader from "../../components/auth/AuthHeader";
 import AuthTabs from "../../components/auth/AuthTabs";
@@ -9,12 +9,13 @@ import validator from "validator";
 import useSignUpUser from "../../hooks/Auth/UseSignUpUser";
 import useLoginUser from "../../hooks/Auth/useLoignUser";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../store/slices/user";
 
 
 
 export default function ArabicAuthForm() {
+  
   const history = useNavigate();
   const [activeTab, setActiveTab] = useState("login");
   const [loginData, setLoginData] = useState({
@@ -29,6 +30,12 @@ export default function ArabicAuthForm() {
     confirmPassword: "",
     identityNumber: "",
   });
+   
+  const currentUser = useSelector((state:any)=>state.user.user)
+  
+  if(currentUser){
+  history("/")
+  }
 
 
   const dispatch = useDispatch()
@@ -147,7 +154,7 @@ export default function ArabicAuthForm() {
                 onSignup={handleSignup}
               />
             )}
-          </div>
+          </div> 
         </div>
 
         <div className="text-center mt-8">

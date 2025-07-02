@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../Dashboard.module.css";
 import { Beneficiary, Housemate, IncomeSource } from "../types";
+import { useGetCurrentAdminTasks } from "../hooks/useGetCurrentAdminTasks";
 
 const mockBeneficiaries: Beneficiary[] = [
   {
@@ -188,7 +189,9 @@ const BeneficiariesList = ({ onSelectBeneficiary, selectedBeneficiary }: Benefic
   const [searchDate, setSearchDate] = useState("2025-06-12");
   const [searchYear, setSearchYear] = useState("");
   const [filteredBeneficiaries, setFilteredBeneficiaries] = useState(mockBeneficiaries);
+  
 
+  //  useGetCurrentAdminTasks()
   const handleSearch = () => {
     // هنا يمكن إضافة منطق البحث حسب التاريخ والسنة
     console.log("Searching with date:", searchDate, "and year:", searchYear);
